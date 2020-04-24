@@ -28,7 +28,7 @@ export class StreamService {
   }
 
   private async loadAndUpdateTrack(track: SpotifyTrack): Promise<Track> {
-    const search = `${track.title} ${track.poster}`;
+    const search = `${track.title} ${track.poster} ${track.albumName}`;
     const result = await this.users.get(search);
     if (result) {
       return result;

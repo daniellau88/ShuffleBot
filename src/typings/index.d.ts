@@ -16,6 +16,7 @@ interface Track {
 interface SpotifyTrack extends Track {
   loaded: boolean;
   trackId: string;
+  albumName: string;
 }
 
 type SCUser = {

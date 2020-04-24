@@ -27,7 +27,8 @@ export class SpotifyAPI {
           pic: item.track.album.images.length ? item.track.album.images[0].url : defaultArt,
           src: 'spot',
           loaded: false,
-          trackId: item.track.uri
+          trackId: item.track.uri,
+          albumName: item.track.album.name
         }))
       };
     } catch (e) {
