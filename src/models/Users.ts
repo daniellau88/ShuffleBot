@@ -43,10 +43,14 @@ export class Users {
   }
 
   public async newPlaylist(userId: string, plId: string, name: string) {
-    let exists = await this.playlistsToUsers.get(plId);
-    if (exists)
-      return `The ID \`${plId}\` is already in use! Try a different one!`;
-
+    try {
+      let exists = await this.playlistsToUsers.get(plId);
+      if (exists)
+        return `The ID \`${plId}\` is already in use! Try a different one!`;
+    } catch(e) {
+      console.log(e);
+      return;
+    }
     await this.playlistsToUsers.set(plId, { user: userId });
     const user = await this.users.addPlaylist(userId, name, plId);
     this.updateUserCache(userId, user);

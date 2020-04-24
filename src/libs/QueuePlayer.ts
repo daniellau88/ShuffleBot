@@ -170,33 +170,38 @@ export class QueuePlayer {
     this.refreshCache();
     this.nowPlaying = this.queue.pop();
     this.streamService.getTrackStream(this.nowPlaying, (stream) => {
-      this.pcMnger.setPlaying(this.nowPlaying);
-      this.pcMnger.newSongCard(this.messageCache.channel as TextChannel, true);
-      this.connection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 });
-      this.connection.dispatcher.once('start', () => console.log(`Streaming: ${this.nowPlaying.title}`));
-      this.connection.dispatcher.once('end', reason => {
-        stream.destroy();
-        this.pcMnger.deleteCards();
-        this.pcMnger.setPaused(false);
-        this.pcMnger.hideQueue();
-        this.messageCache.channel.send(`Played: *${this.nowPlaying.title}*`);
-        if (reason !== 'forceStop') {
-          if (this.connection.channel.members.every(member => member.deaf || member.user.bot)) {
-            this.messageCache.channel.send('Stopping stream since no one is listening');
-            this.connection.disconnect();
-          } else if (this.queue.size() > 0) {
-            console.log('Creating next stream');
-            return setTimeout(() => this.createStream(), 50);
+      try {
+        this.pcMnger.setPlaying(this.nowPlaying);
+        this.pcMnger.newSongCard(this.messageCache.channel as TextChannel, true);
+        this.connection.playStream(stream, { seek: 0, volume: this.volume, passes: 1 });
+        this.connection.dispatcher.once('start', () => console.log(`Streaming: ${this.nowPlaying.title}`));
+        this.connection.dispatcher.once('end', reason => {
+          stream.destroy();
+          this.pcMnger.deleteCards();
+          this.pcMnger.setPaused(false);
+          this.pcMnger.hideQueue();
+          this.messageCache.channel.send(`Played: *${this.nowPlaying.title}*`);
+          if (reason !== 'forceStop') {
+            if (this.connection.channel.members.every(member => member.deaf || member.user.bot)) {
+              this.messageCache.channel.send('Stopping stream since no one is listening');
+              this.connection.disconnect();
+            } else if (this.queue.size() > 0) {
+              console.log('Creating next stream');
+              return setTimeout(() => this.createStream(), 50);
+            }
           }
-        }
-        this.pcMnger.setPlaying(null);
-        this.messageCache.reply('Music stream ended');
-        this.messageCache = null;
-        console.log('Ended music stream');
-      });
-      this.connection.dispatcher.on('error', e => {
-        console.log(`${this.cacheId} encountered error`, e);
-      })
+          this.pcMnger.setPlaying(null);
+          this.messageCache.reply('Music stream ended');
+          this.messageCache = null;
+          console.log('Ended music stream');
+        });
+        this.connection.dispatcher.on('error', e => {
+          console.log(`${this.cacheId} encountered error`, e);
+        });
+      } catch (e) {
+          console.log(e);
+      }
+
     });
     return 'Music stream started';
   }

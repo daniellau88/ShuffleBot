@@ -19,6 +19,7 @@ export function addMusicCommands(bot: DiscordBot, config: BotConfig, daos: Daos)
       await player.join(message.member.voiceChannel);
       await message.react('👏');
     } catch (e) {
+      console.log(e);
       return await message.reply(e);
     }
   };

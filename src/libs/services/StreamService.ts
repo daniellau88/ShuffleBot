@@ -34,10 +34,14 @@ export class StreamService {
       return result;
     }
 
-    const youtubeTracks = await this.ytApi.searchForVideo(search);
-    track.url = youtubeTracks[0].url;
-    track.loaded = true;
-    this.users.set(search, track);
-    return track;
+    try {
+      const youtubeTracks = await this.ytApi.searchForVideo(search);
+      track.url = youtubeTracks[0].url;
+      track.loaded = true;
+      this.users.set(search, track);
+      return track;
+    } catch(e) {
+      console.log(e);
+    }
   }
 }
